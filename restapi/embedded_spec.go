@@ -27,7 +27,7 @@ func init() {
     "/namespaces": {
       "get": {
         "produces": [
-          "text/plain"
+          "application/json"
         ],
         "operationId": "getManagedNamespaces",
         "responses": {
@@ -70,7 +70,7 @@ func init() {
     "/namespaces": {
       "get": {
         "produces": [
-          "text/plain"
+          "application/json"
         ],
         "operationId": "getManagedNamespaces",
         "responses": {

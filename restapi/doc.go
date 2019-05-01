@@ -13,7 +13,7 @@ Package restapi Appuio Kubernetes API gateway
     - application/json
 
     Produces:
-    - text/plain
+    - application/json
 
 swagger:meta
 */
