@@ -1,0 +1,29 @@
+---
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: Appuio Kubernetes API gateway
+paths:
+  /namespaces:
+    get:
+      produces:
+        - text/plain
+      operationId: getManagedNamespaces
+      responses:
+        200:
+          description: returns a list of namespaces
+          schema:
+            type: array
+            description: list of namespaces
+            items:
+              $ref: '#/definitions/namespace'
+
+definitions:
+  namespace:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        minLength: 1
