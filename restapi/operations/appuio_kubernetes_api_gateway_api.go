@@ -36,7 +36,7 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		APIKeyAuthenticator: security.APIKeyAuth,
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
-		TxtProducer:         runtime.TextProducer(),
+		JSONProducer:        runtime.JSONProducer(),
 		GetManagedNamespacesHandler: GetManagedNamespacesHandlerFunc(func(params GetManagedNamespacesParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetManagedNamespaces has not yet been implemented")
 		}),
@@ -68,8 +68,8 @@ type AppuioKubernetesAPIGatewayAPI struct {
 	// JSONConsumer registers a consumer for a "application/json" mime type
 	JSONConsumer runtime.Consumer
 
-	// TxtProducer registers a producer for a "text/plain" mime type
-	TxtProducer runtime.Producer
+	// JSONProducer registers a producer for a "application/json" mime type
+	JSONProducer runtime.Producer
 
 	// GetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
 	GetManagedNamespacesHandler GetManagedNamespacesHandler
@@ -132,8 +132,8 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 		unregistered = append(unregistered, "JSONConsumer")
 	}
 
-	if o.TxtProducer == nil {
-		unregistered = append(unregistered, "TxtProducer")
+	if o.JSONProducer == nil {
+		unregistered = append(unregistered, "JSONProducer")
 	}
 
 	if o.GetManagedNamespacesHandler == nil {
@@ -193,8 +193,8 @@ func (o *AppuioKubernetesAPIGatewayAPI) ProducersFor(mediaTypes []string) map[st
 	for _, mt := range mediaTypes {
 		switch mt {
 
-		case "text/plain":
-			result["text/plain"] = o.TxtProducer
+		case "application/json":
+			result["application/json"] = o.JSONProducer
 
 		}
 

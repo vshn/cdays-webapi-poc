@@ -7,7 +7,7 @@ paths:
   /namespaces:
     get:
       produces:
-        - text/plain
+        - application/json
       operationId: getManagedNamespaces
       responses:
         200:
