@@ -69,7 +69,6 @@ paths:
         200:
           description: deletes a single namespace
           schema:
-            type: object
             $ref: '#/definitions/namespace'
     get:
       tags:
