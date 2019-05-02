@@ -41,7 +41,18 @@ func main() {
 	})
 
 	api.NamespaceGetManagedNamespaceHandler = namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
-		return namespace.NewGetManagedNamespaceOK().WithPayload(kubeClient.GetNamespaceByName(params.Name, params.Namespace))
+		return namespace.NewGetManagedNamespaceOK().WithPayload(kubeClient.GetManagedNamespaceByName(params.Name, params.Customer))
+	})
+
+	api.NamespaceCreateManagedNamespaceHandler = namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
+		newNamespace, err := kubeClient.CreateManagedNamespace(params.Customer, params.Body)
+
+		if err != nil {
+			fmt.Printf("error while creating a new namespace: %v\n", err)
+			return nil
+		}
+
+		return namespace.NewCreateManagedNamespaceOK().WithPayload(newNamespace)
 	})
 
 	parser := flags.NewParser(server, flags.Default)

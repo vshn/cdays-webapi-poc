@@ -9,55 +9,68 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
 	strfmt "github.com/go-openapi/strfmt"
+
+	models "github.com/vshn/cdays-webapi-poc/models"
 )
 
-// NewGetManagedNamespaceParams creates a new GetManagedNamespaceParams object
+// NewCreateManagedNamespaceParams creates a new CreateManagedNamespaceParams object
 // no default values defined in spec.
-func NewGetManagedNamespaceParams() GetManagedNamespaceParams {
+func NewCreateManagedNamespaceParams() CreateManagedNamespaceParams {
 
-	return GetManagedNamespaceParams{}
+	return CreateManagedNamespaceParams{}
 }
 
-// GetManagedNamespaceParams contains all the bound params for the get managed namespace operation
+// CreateManagedNamespaceParams contains all the bound params for the create managed namespace operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters getManagedNamespace
-type GetManagedNamespaceParams struct {
+// swagger:parameters createManagedNamespace
+type CreateManagedNamespaceParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
 	/*
-	  Required: true
-	  In: path
+	  In: body
 	*/
-	Customer string
+	Body *models.Namespace
 	/*
 	  Required: true
 	  In: path
 	*/
-	Name string
+	Customer string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewGetManagedNamespaceParams() beforehand.
-func (o *GetManagedNamespaceParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewCreateManagedNamespaceParams() beforehand.
+func (o *CreateManagedNamespaceParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
 
+	if runtime.HasBody(r) {
+		defer r.Body.Close()
+		var body models.Namespace
+		if err := route.Consumer.Consume(r.Body, &body); err != nil {
+			res = append(res, errors.NewParseError("body", "body", "", err))
+		} else {
+			// validate body object
+			if err := body.Validate(route.Formats); err != nil {
+				res = append(res, err)
+			}
+
+			if len(res) == 0 {
+				o.Body = &body
+			}
+		}
+	}
 	rCustomer, rhkCustomer, _ := route.Params.GetOK("customer")
 	if err := o.bindCustomer(rCustomer, rhkCustomer, route.Formats); err != nil {
-		res = append(res, err)
-	}
-
-	rName, rhkName, _ := route.Params.GetOK("name")
-	if err := o.bindName(rName, rhkName, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -68,7 +81,7 @@ func (o *GetManagedNamespaceParams) BindRequest(r *http.Request, route *middlewa
 }
 
 // bindCustomer binds and validates parameter Customer from path.
-func (o *GetManagedNamespaceParams) bindCustomer(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *CreateManagedNamespaceParams) bindCustomer(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
@@ -78,21 +91,6 @@ func (o *GetManagedNamespaceParams) bindCustomer(rawData []string, hasKey bool, 
 	// Parameter is provided by construction from the route
 
 	o.Customer = raw
-
-	return nil
-}
-
-// bindName binds and validates parameter Name from path.
-func (o *GetManagedNamespaceParams) bindName(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	var raw string
-	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
-	}
-
-	// Required: true
-	// Parameter is provided by construction from the route
-
-	o.Name = raw
 
 	return nil
 }

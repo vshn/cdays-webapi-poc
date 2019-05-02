@@ -7,7 +7,6 @@ package operations
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -39,20 +38,15 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		APIKeyAuthenticator: security.APIKeyAuth,
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
-<<<<<<< HEAD
 		JSONProducer:        runtime.JSONProducer(),
-		GetManagedNamespacesHandler: GetManagedNamespacesHandlerFunc(func(params GetManagedNamespacesParams) middleware.Responder {
-			return middleware.NotImplemented("operation GetManagedNamespaces has not yet been implemented")
-=======
-		TextJSONProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
-			return errors.NotImplemented("textJson producer has not yet been implemented")
+		NamespaceCreateManagedNamespaceHandler: namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceCreateManagedNamespace has not yet been implemented")
 		}),
 		NamespaceGetManagedNamespaceHandler: namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespace has not yet been implemented")
 		}),
 		NamespaceGetManagedNamespacesHandler: namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespaces has not yet been implemented")
->>>>>>> single namespace
 		}),
 	}
 }
@@ -82,14 +76,11 @@ type AppuioKubernetesAPIGatewayAPI struct {
 	// JSONConsumer registers a consumer for a "application/json" mime type
 	JSONConsumer runtime.Consumer
 
-<<<<<<< HEAD
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
-=======
-	// TextJSONProducer registers a producer for a "text/json" mime type
-	TextJSONProducer runtime.Producer
->>>>>>> single namespace
 
+	// NamespaceCreateManagedNamespaceHandler sets the operation handler for the create managed namespace operation
+	NamespaceCreateManagedNamespaceHandler namespace.CreateManagedNamespaceHandler
 	// NamespaceGetManagedNamespaceHandler sets the operation handler for the get managed namespace operation
 	NamespaceGetManagedNamespaceHandler namespace.GetManagedNamespaceHandler
 	// NamespaceGetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
@@ -153,17 +144,16 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 		unregistered = append(unregistered, "JSONConsumer")
 	}
 
-<<<<<<< HEAD
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
-=======
-	if o.TextJSONProducer == nil {
-		unregistered = append(unregistered, "TextJSONProducer")
+	}
+
+	if o.NamespaceCreateManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.CreateManagedNamespaceHandler")
 	}
 
 	if o.NamespaceGetManagedNamespaceHandler == nil {
 		unregistered = append(unregistered, "namespace.GetManagedNamespaceHandler")
->>>>>>> single namespace
 	}
 
 	if o.NamespaceGetManagedNamespacesHandler == nil {
@@ -223,13 +213,8 @@ func (o *AppuioKubernetesAPIGatewayAPI) ProducersFor(mediaTypes []string) map[st
 	for _, mt := range mediaTypes {
 		switch mt {
 
-<<<<<<< HEAD
 		case "application/json":
 			result["application/json"] = o.JSONProducer
-=======
-		case "text/json":
-			result["text/json"] = o.TextJSONProducer
->>>>>>> single namespace
 
 		}
 
@@ -273,10 +258,15 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/namespace/{customer}"] = namespace.NewCreateManagedNamespace(o.context, o.NamespaceCreateManagedNamespaceHandler)
+
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/namespace/{namespace}/{name}"] = namespace.NewGetManagedNamespace(o.context, o.NamespaceGetManagedNamespaceHandler)
+	o.handlers["GET"]["/namespace/{customer}/{name}"] = namespace.NewGetManagedNamespace(o.context, o.NamespaceGetManagedNamespaceHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

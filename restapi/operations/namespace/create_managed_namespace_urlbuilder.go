@@ -12,10 +12,9 @@ import (
 	"strings"
 )
 
-// GetManagedNamespaceURL generates an URL for the get managed namespace operation
-type GetManagedNamespaceURL struct {
+// CreateManagedNamespaceURL generates an URL for the create managed namespace operation
+type CreateManagedNamespaceURL struct {
 	Customer string
-	Name     string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -25,7 +24,7 @@ type GetManagedNamespaceURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetManagedNamespaceURL) WithBasePath(bp string) *GetManagedNamespaceURL {
+func (o *CreateManagedNamespaceURL) WithBasePath(bp string) *CreateManagedNamespaceURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -33,28 +32,21 @@ func (o *GetManagedNamespaceURL) WithBasePath(bp string) *GetManagedNamespaceURL
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetManagedNamespaceURL) SetBasePath(bp string) {
+func (o *CreateManagedNamespaceURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *GetManagedNamespaceURL) Build() (*url.URL, error) {
+func (o *CreateManagedNamespaceURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/namespace/{customer}/{name}"
+	var _path = "/namespace/{customer}"
 
 	customer := o.Customer
 	if customer != "" {
 		_path = strings.Replace(_path, "{customer}", customer, -1)
 	} else {
-		return nil, errors.New("customer is required on GetManagedNamespaceURL")
-	}
-
-	name := o.Name
-	if name != "" {
-		_path = strings.Replace(_path, "{name}", name, -1)
-	} else {
-		return nil, errors.New("name is required on GetManagedNamespaceURL")
+		return nil, errors.New("customer is required on CreateManagedNamespaceURL")
 	}
 
 	_basePath := o._basePath
@@ -64,7 +56,7 @@ func (o *GetManagedNamespaceURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *GetManagedNamespaceURL) Must(u *url.URL, err error) *url.URL {
+func (o *CreateManagedNamespaceURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -75,17 +67,17 @@ func (o *GetManagedNamespaceURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *GetManagedNamespaceURL) String() string {
+func (o *CreateManagedNamespaceURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *GetManagedNamespaceURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *CreateManagedNamespaceURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on GetManagedNamespaceURL")
+		return nil, errors.New("scheme is required for a full url on CreateManagedNamespaceURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on GetManagedNamespaceURL")
+		return nil, errors.New("host is required for a full url on CreateManagedNamespaceURL")
 	}
 
 	base, err := o.Build()
@@ -99,6 +91,6 @@ func (o *GetManagedNamespaceURL) BuildFull(scheme, host string) (*url.URL, error
 }
 
 // StringFull returns the string representation of a complete url
-func (o *GetManagedNamespaceURL) StringFull(scheme, host string) string {
+func (o *CreateManagedNamespaceURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

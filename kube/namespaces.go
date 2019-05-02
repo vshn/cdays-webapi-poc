@@ -13,6 +13,7 @@ import (
 	"github.com/go-openapi/swag"
 	controlv1 "github.com/vshn/cdays-namespace-poc/pkg/apis/control/v1alpha1"
 	"github.com/vshn/cdays-webapi-poc/models"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -29,17 +30,18 @@ func (k *ClientManager) AllManagedNamespaces() []*models.Namespace {
 
 	for _, space := range managedNamespaces.Items {
 		namespaces = append(namespaces, &models.Namespace{
-			Name: swag.String(space.GetName()),
+			Name:        swag.String(space.GetName()),
+			Description: space.Spec.Description,
 		})
 	}
 
 	return namespaces
 }
 
-func (k *ClientManager) GetNamespaceByName(name, namespace string) *models.Namespace {
+func (k *ClientManager) GetManagedNamespaceByName(name, customer string) *models.Namespace {
 
 	key := client.ObjectKey{
-		Namespace: namespace,
+		Namespace: customer,
 		Name:      name,
 	}
 
@@ -48,6 +50,26 @@ func (k *ClientManager) GetNamespaceByName(name, namespace string) *models.Names
 	k.CRDClient.Get(context.Background(), key, managedNamespaces)
 
 	return &models.Namespace{
-		Name: swag.String(managedNamespaces.GetName()),
+		Name:        swag.String(managedNamespaces.GetName()),
+		Description: managedNamespaces.Spec.Description,
 	}
+}
+
+func (k *ClientManager) CreateManagedNamespace(customer string, newNamespace *models.Namespace) (*models.Namespace, error) {
+	toCreate := &controlv1.ManagedNamespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      swag.StringValue(newNamespace.Name),
+			Namespace: customer,
+		},
+		Spec: controlv1.ManagedNamespaceSpec{
+			Description: newNamespace.Description,
+		},
+	}
+
+	err := k.CRDClient.Create(context.Background(), toCreate)
+	if err != nil {
+		return nil, err
+	}
+
+	return newNamespace, nil
 }
