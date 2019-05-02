@@ -42,6 +42,9 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		NamespaceCreateManagedNamespaceHandler: namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceCreateManagedNamespace has not yet been implemented")
 		}),
+		NamespaceDeleteManagedNamespaceHandler: namespace.DeleteManagedNamespaceHandlerFunc(func(params namespace.DeleteManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceDeleteManagedNamespace has not yet been implemented")
+		}),
 		NamespaceGetManagedNamespaceHandler: namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespace has not yet been implemented")
 		}),
@@ -81,6 +84,8 @@ type AppuioKubernetesAPIGatewayAPI struct {
 
 	// NamespaceCreateManagedNamespaceHandler sets the operation handler for the create managed namespace operation
 	NamespaceCreateManagedNamespaceHandler namespace.CreateManagedNamespaceHandler
+	// NamespaceDeleteManagedNamespaceHandler sets the operation handler for the delete managed namespace operation
+	NamespaceDeleteManagedNamespaceHandler namespace.DeleteManagedNamespaceHandler
 	// NamespaceGetManagedNamespaceHandler sets the operation handler for the get managed namespace operation
 	NamespaceGetManagedNamespaceHandler namespace.GetManagedNamespaceHandler
 	// NamespaceGetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
@@ -150,6 +155,10 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 
 	if o.NamespaceCreateManagedNamespaceHandler == nil {
 		unregistered = append(unregistered, "namespace.CreateManagedNamespaceHandler")
+	}
+
+	if o.NamespaceDeleteManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.DeleteManagedNamespaceHandler")
 	}
 
 	if o.NamespaceGetManagedNamespaceHandler == nil {
@@ -262,6 +271,11 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/namespace/{customer}"] = namespace.NewCreateManagedNamespace(o.context, o.NamespaceCreateManagedNamespaceHandler)
+
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/namespace/{customer}/{name}"] = namespace.NewDeleteManagedNamespace(o.context, o.NamespaceDeleteManagedNamespaceHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

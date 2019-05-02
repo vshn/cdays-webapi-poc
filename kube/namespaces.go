@@ -73,3 +73,16 @@ func (k *ClientManager) CreateManagedNamespace(customer string, newNamespace *mo
 
 	return newNamespace, nil
 }
+
+func (k ClientManager) DeleteManagedNamespace(customer, name string) (*models.Namespace, error) {
+	managed := controlv1.ManagedNamespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: customer,
+		},
+	}
+
+	err := k.CRDClient.Delete(context.Background(), &managed, client.PropagationPolicy(metav1.DeletePropagationBackground))
+
+	return &models.Namespace{Name: swag.String(name)}, err
+}

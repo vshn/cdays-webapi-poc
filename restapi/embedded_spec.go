@@ -97,6 +97,40 @@ func init() {
             }
           }
         }
+      },
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "deleteManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes a single namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
       }
     },
     "/namespaces": {
@@ -216,6 +250,40 @@ func init() {
         "responses": {
           "200": {
             "description": "returns a single namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      },
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "deleteManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes a single namespace",
             "schema": {
               "type": "object",
               "$ref": "#/definitions/namespace"

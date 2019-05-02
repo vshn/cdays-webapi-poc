@@ -20,6 +20,29 @@ paths:
             items:
               $ref: '#/definitions/namespace'
   /namespace/{customer}/{name}:
+    delete:
+      tags:
+        - namespace
+      parameters:
+      - type: string
+        format: string
+        name: name
+        in: path
+        required: true
+      - type: string
+        format: string
+        name: customer
+        in: path
+        required: true
+      produces:
+        - application/json
+      operationId: deleteManagedNamespace
+      responses:
+        200:
+          description: deletes a single namespace
+          schema:
+            type: object
+            $ref: '#/definitions/namespace'
     get:
       tags:
         - namespace
