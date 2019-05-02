@@ -17,6 +17,7 @@ import (
 	"github.com/vshn/cdays-webapi-poc/kube"
 	"github.com/vshn/cdays-webapi-poc/restapi"
 	"github.com/vshn/cdays-webapi-poc/restapi/operations"
+	"github.com/vshn/cdays-webapi-poc/restapi/operations/namespace"
 )
 
 func main() {
@@ -35,8 +36,12 @@ func main() {
 		fmt.Println(err)
 	}
 
-	api.GetManagedNamespacesHandler = operations.GetManagedNamespacesHandlerFunc(func(params operations.GetManagedNamespacesParams) middleware.Responder {
-		return operations.NewGetManagedNamespacesOK().WithPayload(kubeClient.AllManagedNamespaces())
+	api.NamespaceGetManagedNamespacesHandler = namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
+		return namespace.NewGetManagedNamespacesOK().WithPayload(kubeClient.AllManagedNamespaces())
+	})
+
+	api.NamespaceGetManagedNamespaceHandler = namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
+		return namespace.NewGetManagedNamespaceOK().WithPayload(kubeClient.GetNamespaceByName(params.Name, params.Namespace))
 	})
 
 	parser := flags.NewParser(server, flags.Default)

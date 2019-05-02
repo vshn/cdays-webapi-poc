@@ -6,6 +6,8 @@ info:
 paths:
   /namespaces:
     get:
+      tags:
+        - namespace
       produces:
         - application/json
       operationId: getManagedNamespaces
@@ -17,14 +19,30 @@ paths:
             description: list of namespaces
             items:
               $ref: '#/definitions/namespace'
-  /namespace:
+  /namespace/{namespace}/{name}:
     get:
+      tags:
+        - namespace
+      parameters:
+      - type: string
+        format: string
+        name: name
+        in: path
+        required: true
+      - type: string
+        format: string
+        name: namespace
+        in: path
+        required: true
       produces:
         - text/json
       operationId: getManagedNamespace
       responses:
         200:
           description: returns a single namespace
+          schema:
+            type: object
+            $ref: '#/definitions/namespace'
 
 
 definitions:

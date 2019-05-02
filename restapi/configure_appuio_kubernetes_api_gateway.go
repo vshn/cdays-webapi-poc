@@ -34,6 +34,8 @@ func configureAPI(api *operations.AppuioKubernetesAPIGatewayAPI) http.Handler {
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
+	api.TextJSONProducer = runtime.JSONProducer()
+
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
 

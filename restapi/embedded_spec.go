@@ -24,10 +24,49 @@ func init() {
     "version": "0.0.1"
   },
   "paths": {
+    "/namespace/{namespace}/{name}": {
+      "get": {
+        "produces": [
+          "text/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "getManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "namespace",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a single namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      }
+    },
     "/namespaces": {
       "get": {
         "produces": [
           "application/json"
+        ],
+        "tags": [
+          "namespace"
         ],
         "operationId": "getManagedNamespaces",
         "responses": {
@@ -67,10 +106,53 @@ func init() {
     "version": "0.0.1"
   },
   "paths": {
+    "/namespace/{namespace}/{name}": {
+      "get": {
+        "produces": [
+          "text/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "getManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "namespace",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a single namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      }
+    },
     "/namespaces": {
       "get": {
         "produces": [
+<<<<<<< HEAD
           "application/json"
+=======
+          "text/json"
+        ],
+        "tags": [
+          "namespace"
+>>>>>>> single namespace
         ],
         "operationId": "getManagedNamespaces",
         "responses": {

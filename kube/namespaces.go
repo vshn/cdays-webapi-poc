@@ -36,11 +36,11 @@ func (k *ClientManager) AllManagedNamespaces() []*models.Namespace {
 	return namespaces
 }
 
-func (k *ClientManager) GetNamespaceByName() *models.Namespace {
+func (k *ClientManager) GetNamespaceByName(name, namespace string) *models.Namespace {
 
 	key := client.ObjectKey{
-		Namespace: "",
-		Name:      "example-managednamespace",
+		Namespace: namespace,
+		Name:      name,
 	}
 
 	managedNamespaces := &controlv1.ManagedNamespace{}
