@@ -17,6 +17,15 @@ paths:
             description: list of namespaces
             items:
               $ref: '#/definitions/namespace'
+  /namespace:
+    get:
+      produces:
+        - text/json
+      operationId: getManagedNamespace
+      responses:
+        200:
+          description: returns a single namespace
+
 
 definitions:
   namespace:

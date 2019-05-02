@@ -8,25 +8,46 @@ package kube
 import (
 	"fmt"
 
+	"context"
+
 	"github.com/go-openapi/swag"
+	controlv1 "github.com/vshn/cdays-namespace-poc/pkg/apis/control/v1alpha1"
 	"github.com/vshn/cdays-webapi-poc/models"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func (k *ClientManager) AllManagedNamespaces() []*models.Namespace {
 	namespaces := make([]*models.Namespace, 0)
 
-	ns, err := k.K8sClient.CoreV1().Namespaces().List(metav1.ListOptions{})
+	managedNamespaces := &controlv1.ManagedNamespaceList{}
+
+	err := k.CRDClient.List(context.Background(), &client.ListOptions{}, managedNamespaces)
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
 
-	for _, space := range ns.Items {
+	for _, space := range managedNamespaces.Items {
 		namespaces = append(namespaces, &models.Namespace{
 			Name: swag.String(space.GetName()),
 		})
 	}
 
 	return namespaces
+}
+
+func (k *ClientManager) GetNamespaceByName() *models.Namespace {
+
+	key := client.ObjectKey{
+		Namespace: "",
+		Name:      "example-managednamespace",
+	}
+
+	managedNamespaces := &controlv1.ManagedNamespace{}
+
+	k.CRDClient.Get(context.Background(), key, managedNamespaces)
+
+	return &models.Namespace{
+		Name: swag.String(managedNamespaces.GetName()),
+	}
 }
