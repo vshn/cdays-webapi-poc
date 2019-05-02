@@ -6,6 +6,8 @@ info:
 paths:
   /namespaces:
     get:
+      tags:
+        - namespace
       produces:
         - application/json
       operationId: getManagedNamespaces
@@ -17,6 +19,56 @@ paths:
             description: list of namespaces
             items:
               $ref: '#/definitions/namespace'
+  /namespace/{customer}/{name}:
+    get:
+      tags:
+        - namespace
+      parameters:
+      - type: string
+        format: string
+        name: name
+        in: path
+        required: true
+      - type: string
+        format: string
+        name: customer
+        in: path
+        required: true
+      produces:
+        - application/json
+      operationId: getManagedNamespace
+      responses:
+        200:
+          description: returns a single namespace
+          schema:
+            type: object
+            $ref: '#/definitions/namespace'
+  /namespace/{customer}:
+    put:
+      tags:
+        - namespace
+      parameters:
+      - type: string
+        format: string
+        name: customer
+        in: path
+        required: true
+      - name: body
+        in: body
+        schema:
+          $ref: "#/definitions/namespace"
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      operationId: createManagedNamespace
+      responses:
+        200:
+          description: create a new managed namespace
+          schema:
+            type: object
+            $ref: '#/definitions/namespace'
+
 
 definitions:
   namespace:
@@ -25,5 +77,8 @@ definitions:
       - name
     properties:
       name:
+        type: string
+        minLength: 1
+      description:
         type: string
         minLength: 1

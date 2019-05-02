@@ -24,10 +24,88 @@ func init() {
     "version": "0.0.1"
   },
   "paths": {
+    "/namespace/{customer}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "createManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a new managed namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      }
+    },
+    "/namespace/{customer}/{name}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "getManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a single namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      }
+    },
     "/namespaces": {
       "get": {
         "produces": [
           "application/json"
+        ],
+        "tags": [
+          "namespace"
         ],
         "operationId": "getManagedNamespaces",
         "responses": {
@@ -52,6 +130,10 @@ func init() {
         "name"
       ],
       "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
         "name": {
           "type": "string",
           "minLength": 1
@@ -67,10 +149,88 @@ func init() {
     "version": "0.0.1"
   },
   "paths": {
+    "/namespace/{customer}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "createManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a new managed namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      }
+    },
+    "/namespace/{customer}/{name}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "getManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a single namespace",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      }
+    },
     "/namespaces": {
       "get": {
         "produces": [
           "application/json"
+        ],
+        "tags": [
+          "namespace"
         ],
         "operationId": "getManagedNamespaces",
         "responses": {
@@ -95,6 +255,10 @@ func init() {
         "name"
       ],
       "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
         "name": {
           "type": "string",
           "minLength": 1

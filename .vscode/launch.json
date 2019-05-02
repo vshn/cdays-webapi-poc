@@ -9,6 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
+      "showGlobalVariables": false,
       "program": "${workspaceFolder}/cmd/appuio-kubernetes-api-gateway-server",
       "env": {},
       "args": []

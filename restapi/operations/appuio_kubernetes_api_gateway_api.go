@@ -18,6 +18,8 @@ import (
 	spec "github.com/go-openapi/spec"
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+
+	"github.com/vshn/cdays-webapi-poc/restapi/operations/namespace"
 )
 
 // NewAppuioKubernetesAPIGatewayAPI creates a new AppuioKubernetesAPIGateway instance
@@ -37,8 +39,14 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
-		GetManagedNamespacesHandler: GetManagedNamespacesHandlerFunc(func(params GetManagedNamespacesParams) middleware.Responder {
-			return middleware.NotImplemented("operation GetManagedNamespaces has not yet been implemented")
+		NamespaceCreateManagedNamespaceHandler: namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceCreateManagedNamespace has not yet been implemented")
+		}),
+		NamespaceGetManagedNamespaceHandler: namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceGetManagedNamespace has not yet been implemented")
+		}),
+		NamespaceGetManagedNamespacesHandler: namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceGetManagedNamespaces has not yet been implemented")
 		}),
 	}
 }
@@ -71,8 +79,12 @@ type AppuioKubernetesAPIGatewayAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
-	// GetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
-	GetManagedNamespacesHandler GetManagedNamespacesHandler
+	// NamespaceCreateManagedNamespaceHandler sets the operation handler for the create managed namespace operation
+	NamespaceCreateManagedNamespaceHandler namespace.CreateManagedNamespaceHandler
+	// NamespaceGetManagedNamespaceHandler sets the operation handler for the get managed namespace operation
+	NamespaceGetManagedNamespaceHandler namespace.GetManagedNamespaceHandler
+	// NamespaceGetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
+	NamespaceGetManagedNamespacesHandler namespace.GetManagedNamespacesHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -136,8 +148,16 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.GetManagedNamespacesHandler == nil {
-		unregistered = append(unregistered, "GetManagedNamespacesHandler")
+	if o.NamespaceCreateManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.CreateManagedNamespaceHandler")
+	}
+
+	if o.NamespaceGetManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.GetManagedNamespaceHandler")
+	}
+
+	if o.NamespaceGetManagedNamespacesHandler == nil {
+		unregistered = append(unregistered, "namespace.GetManagedNamespacesHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -238,10 +258,20 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/namespace/{customer}"] = namespace.NewCreateManagedNamespace(o.context, o.NamespaceCreateManagedNamespaceHandler)
+
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/namespaces"] = NewGetManagedNamespaces(o.context, o.GetManagedNamespacesHandler)
+	o.handlers["GET"]["/namespace/{customer}/{name}"] = namespace.NewGetManagedNamespace(o.context, o.NamespaceGetManagedNamespaceHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/namespaces"] = namespace.NewGetManagedNamespaces(o.context, o.NamespaceGetManagedNamespacesHandler)
 
 }
 

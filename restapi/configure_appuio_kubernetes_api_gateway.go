@@ -1,8 +1,4 @@
-//
-// Copyright (c) 2019, VSHN AG, info@vshn.ch
-// Licensed under "BSD 3-Clause". See LICENSE file.
-//
-//
+// This file is safe to edit. Once it exists it will not be overwritten
 
 package restapi
 
@@ -12,11 +8,13 @@ import (
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
+	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/vshn/cdays-webapi-poc/restapi/operations"
+	"github.com/vshn/cdays-webapi-poc/restapi/operations/namespace"
 )
 
-//go:generate swagger generate server --target ../../cdays-webapi --name AppuioKubernetesAPIGateway --spec ../swagger.yaml
+//go:generate swagger generate server --target ../../cdays-webapi --name AppuioKubernetesAPIGateway --spec ../swagger.yaml --exclude-main
 
 func configureFlags(api *operations.AppuioKubernetesAPIGatewayAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -33,6 +31,26 @@ func configureAPI(api *operations.AppuioKubernetesAPIGatewayAPI) http.Handler {
 	// api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
+
+	api.JSONProducer = runtime.JSONProducer()
+
+	if api.NamespaceCreateManagedNamespaceHandler == nil {
+		api.NamespaceCreateManagedNamespaceHandler = namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation namespace.CreateManagedNamespace has not yet been implemented")
+		})
+	}
+	if api.NamespaceGetManagedNamespaceHandler == nil {
+		api.NamespaceGetManagedNamespaceHandler = namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation namespace.GetManagedNamespace has not yet been implemented")
+		})
+	}
+	if api.NamespaceGetManagedNamespacesHandler == nil {
+		api.NamespaceGetManagedNamespacesHandler = namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
+			return middleware.NotImplemented("operation namespace.GetManagedNamespaces has not yet been implemented")
+		})
+	}
+
+	api.ServerShutdown = func() {}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
