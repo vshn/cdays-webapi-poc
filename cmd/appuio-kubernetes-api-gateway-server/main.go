@@ -55,6 +55,25 @@ func main() {
 		return namespace.NewCreateManagedNamespaceOK().WithPayload(newNamespace)
 	})
 
+	api.NamespaceDeleteManagedNamespaceHandler = namespace.DeleteManagedNamespaceHandlerFunc(func(params namespace.DeleteManagedNamespaceParams) middleware.Responder {
+		deleted, err := kubeClient.DeleteManagedNamespace(params.Customer, params.Name)
+		if err != nil {
+			fmt.Printf("can't delete managed namespace: %v", err)
+		}
+
+		return namespace.NewDeleteManagedNamespaceOK().WithPayload(deleted)
+	})
+
+	api.NamespaceUpdateManagedNamespaceHandler = namespace.UpdateManagedNamespaceHandlerFunc(func(params namespace.UpdateManagedNamespaceParams) middleware.Responder {
+		updated, err := kubeClient.UpdateManagedNamespace(params.Customer, params.Name, params.Body)
+
+		if err != nil {
+			fmt.Printf("error updating managed namespace: %v", err)
+		}
+
+		return namespace.NewUpdateManagedNamespaceOK().WithPayload(updated)
+	})
+
 	parser := flags.NewParser(server, flags.Default)
 	parser.ShortDescription = "Appuio Kubernetes API gateway"
 	parser.LongDescription = swaggerSpec.Spec().Info.Description

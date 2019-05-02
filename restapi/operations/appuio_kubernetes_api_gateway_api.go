@@ -42,11 +42,17 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		NamespaceCreateManagedNamespaceHandler: namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceCreateManagedNamespace has not yet been implemented")
 		}),
+		NamespaceDeleteManagedNamespaceHandler: namespace.DeleteManagedNamespaceHandlerFunc(func(params namespace.DeleteManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceDeleteManagedNamespace has not yet been implemented")
+		}),
 		NamespaceGetManagedNamespaceHandler: namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespace has not yet been implemented")
 		}),
 		NamespaceGetManagedNamespacesHandler: namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespaces has not yet been implemented")
+		}),
+		NamespaceUpdateManagedNamespaceHandler: namespace.UpdateManagedNamespaceHandlerFunc(func(params namespace.UpdateManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceUpdateManagedNamespace has not yet been implemented")
 		}),
 	}
 }
@@ -81,10 +87,14 @@ type AppuioKubernetesAPIGatewayAPI struct {
 
 	// NamespaceCreateManagedNamespaceHandler sets the operation handler for the create managed namespace operation
 	NamespaceCreateManagedNamespaceHandler namespace.CreateManagedNamespaceHandler
+	// NamespaceDeleteManagedNamespaceHandler sets the operation handler for the delete managed namespace operation
+	NamespaceDeleteManagedNamespaceHandler namespace.DeleteManagedNamespaceHandler
 	// NamespaceGetManagedNamespaceHandler sets the operation handler for the get managed namespace operation
 	NamespaceGetManagedNamespaceHandler namespace.GetManagedNamespaceHandler
 	// NamespaceGetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
 	NamespaceGetManagedNamespacesHandler namespace.GetManagedNamespacesHandler
+	// NamespaceUpdateManagedNamespaceHandler sets the operation handler for the update managed namespace operation
+	NamespaceUpdateManagedNamespaceHandler namespace.UpdateManagedNamespaceHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -152,12 +162,20 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 		unregistered = append(unregistered, "namespace.CreateManagedNamespaceHandler")
 	}
 
+	if o.NamespaceDeleteManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.DeleteManagedNamespaceHandler")
+	}
+
 	if o.NamespaceGetManagedNamespaceHandler == nil {
 		unregistered = append(unregistered, "namespace.GetManagedNamespaceHandler")
 	}
 
 	if o.NamespaceGetManagedNamespacesHandler == nil {
 		unregistered = append(unregistered, "namespace.GetManagedNamespacesHandler")
+	}
+
+	if o.NamespaceUpdateManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.UpdateManagedNamespaceHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -263,6 +281,11 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 	}
 	o.handlers["PUT"]["/namespace/{customer}"] = namespace.NewCreateManagedNamespace(o.context, o.NamespaceCreateManagedNamespaceHandler)
 
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/namespace/{customer}/{name}"] = namespace.NewDeleteManagedNamespace(o.context, o.NamespaceDeleteManagedNamespaceHandler)
+
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -272,6 +295,11 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/namespaces"] = namespace.NewGetManagedNamespaces(o.context, o.NamespaceGetManagedNamespacesHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/namespace/{customer}/{name}"] = namespace.NewUpdateManagedNamespace(o.context, o.NamespaceUpdateManagedNamespaceHandler)
 
 }
 

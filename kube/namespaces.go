@@ -32,6 +32,7 @@ func (k *ClientManager) AllManagedNamespaces() []*models.Namespace {
 		namespaces = append(namespaces, &models.Namespace{
 			Name:        swag.String(space.GetName()),
 			Description: space.Spec.Description,
+			Customer:    swag.String(space.GetNamespace()),
 		})
 	}
 
@@ -52,6 +53,7 @@ func (k *ClientManager) GetManagedNamespaceByName(name, customer string) *models
 	return &models.Namespace{
 		Name:        swag.String(managedNamespaces.GetName()),
 		Description: managedNamespaces.Spec.Description,
+		Customer:    swag.String(managedNamespaces.GetNamespace()),
 	}
 }
 
@@ -72,4 +74,38 @@ func (k *ClientManager) CreateManagedNamespace(customer string, newNamespace *mo
 	}
 
 	return newNamespace, nil
+}
+
+func (k *ClientManager) DeleteManagedNamespace(customer, name string) (*models.Namespace, error) {
+	managed := controlv1.ManagedNamespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: customer,
+		},
+	}
+
+	err := k.CRDClient.Delete(context.Background(), &managed, client.PropagationPolicy(metav1.DeletePropagationBackground))
+
+	return &models.Namespace{Name: swag.String(name), Customer: swag.String(customer)}, err
+}
+
+func (k *ClientManager) UpdateManagedNamespace(customer, name string, managedNamespace *models.Namespace) (*models.Namespace, error) {
+	key := client.ObjectKey{
+		Namespace: customer,
+		Name:      name,
+	}
+
+	get := &controlv1.ManagedNamespace{}
+
+	err := k.CRDClient.Get(context.Background(), key, get)
+
+	if err != nil {
+		return nil, err
+	}
+
+	get.Spec.Description = managedNamespace.Description
+
+	err = k.CRDClient.Update(context.Background(), get)
+
+	return managedNamespace, err
 }
