@@ -51,6 +51,9 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		NamespaceGetManagedNamespacesHandler: namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespaces has not yet been implemented")
 		}),
+		NamespaceUpdateManagedNamespaceHandler: namespace.UpdateManagedNamespaceHandlerFunc(func(params namespace.UpdateManagedNamespaceParams) middleware.Responder {
+			return middleware.NotImplemented("operation NamespaceUpdateManagedNamespace has not yet been implemented")
+		}),
 	}
 }
 
@@ -90,6 +93,8 @@ type AppuioKubernetesAPIGatewayAPI struct {
 	NamespaceGetManagedNamespaceHandler namespace.GetManagedNamespaceHandler
 	// NamespaceGetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
 	NamespaceGetManagedNamespacesHandler namespace.GetManagedNamespacesHandler
+	// NamespaceUpdateManagedNamespaceHandler sets the operation handler for the update managed namespace operation
+	NamespaceUpdateManagedNamespaceHandler namespace.UpdateManagedNamespaceHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -167,6 +172,10 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 
 	if o.NamespaceGetManagedNamespacesHandler == nil {
 		unregistered = append(unregistered, "namespace.GetManagedNamespacesHandler")
+	}
+
+	if o.NamespaceUpdateManagedNamespaceHandler == nil {
+		unregistered = append(unregistered, "namespace.UpdateManagedNamespaceHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -286,6 +295,11 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/namespaces"] = namespace.NewGetManagedNamespaces(o.context, o.NamespaceGetManagedNamespacesHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/namespace/{customer}/{name}"] = namespace.NewUpdateManagedNamespace(o.context, o.NamespaceUpdateManagedNamespaceHandler)
 
 }
 

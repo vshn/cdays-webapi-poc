@@ -56,7 +56,6 @@ func init() {
           "200": {
             "description": "create a new managed namespace",
             "schema": {
-              "type": "object",
               "$ref": "#/definitions/namespace"
             }
           }
@@ -92,7 +91,49 @@ func init() {
           "200": {
             "description": "returns a single namespace",
             "schema": {
-              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "updateManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes a single namespace",
+            "schema": {
               "$ref": "#/definitions/namespace"
             }
           }
@@ -161,9 +202,14 @@ func init() {
     "namespace": {
       "type": "object",
       "required": [
-        "name"
+        "name",
+        "customer"
       ],
       "properties": {
+        "customer": {
+          "type": "string",
+          "minLength": 1
+        },
         "description": {
           "type": "string",
           "minLength": 1
@@ -215,7 +261,6 @@ func init() {
           "200": {
             "description": "create a new managed namespace",
             "schema": {
-              "type": "object",
               "$ref": "#/definitions/namespace"
             }
           }
@@ -251,7 +296,49 @@ func init() {
           "200": {
             "description": "returns a single namespace",
             "schema": {
-              "type": "object",
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "namespace"
+        ],
+        "operationId": "updateManagedNamespace",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "string",
+            "name": "customer",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/namespace"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes a single namespace",
+            "schema": {
               "$ref": "#/definitions/namespace"
             }
           }
@@ -320,9 +407,14 @@ func init() {
     "namespace": {
       "type": "object",
       "required": [
-        "name"
+        "name",
+        "customer"
       ],
       "properties": {
+        "customer": {
+          "type": "string",
+          "minLength": 1
+        },
         "description": {
           "type": "string",
           "minLength": 1
