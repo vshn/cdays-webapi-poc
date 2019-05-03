@@ -6,42 +6,73 @@
 package kube
 
 import (
-	"fmt"
-	"path/filepath"
-
-	namespace "github.com/vshn/cdays-namespace-poc/pkg/apis"
+	"github.com/go-openapi/swag"
+	namespacev1 "github.com/vshn/cdays-namespace-poc/pkg/apis"
+	"github.com/vshn/cdays-webapi-poc/models"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ClientManager holds the k8sclient
 type ClientManager struct {
-	// currently only a single client supported
+	clusters  map[string]ClusterClients
 	K8sClient kubernetes.Interface
 	CRDClient client.Client
 }
 
+type ClusterClients struct {
+	K8sClient kubernetes.Interface
+	CRDClient client.Client
+	meta      *models.Cluster
+}
+
+type ClientProvider interface {
+	GetClients(clusterName string) *ClusterClients
+}
+
 func NewClientManager(dev bool) (*ClientManager, error) {
-	var err error
 	var cfg *rest.Config
 
 	// If devel mode then use configuration flag path.
 	if dev {
-		cfg, err = clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
-		if err != nil {
-			return nil, fmt.Errorf("could not load configuration: %s", err)
+		// cfg, err = clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
+		// if err != nil {
+		// 	return nil, fmt.Errorf("could not load configuration: %s", err)
+		// }
+		cfg = &rest.Config{
+			Host:        "https://rancher.vshn.net:443/k8s/clusters/c-gzznj",
+			BearerToken: "kubeconfig-u-kuhg44bsif.c-gzznj:z7jkfwxdcr9j9lqg9c2sh64d9rbzrbpvkm6n64vr68tl9hmm4fhd9k",
 		}
-	} else {
-		// Some dynamic client generation
 	}
 
+	clients := clientsFromConfig(cfg)
+
+	return &ClientManager{
+		K8sClient: clients.K8sClient,
+		CRDClient: clients.CRDClient,
+		clusters:  make(map[string]ClusterClients, 0),
+	}, nil
+}
+
+func newCluster(newCluster *models.Cluster) (*ClusterClients, error) {
+	cfg := &rest.Config{
+		Host:        swag.StringValue(newCluster.URL),
+		BearerToken: newCluster.Token,
+	}
+
+	client := clientsFromConfig(cfg)
+
+	client.meta = newCluster
+
+	return client, nil
+}
+
+func clientsFromConfig(cfg *rest.Config) *ClusterClients {
 	s := runtime.NewScheme()
 
-	namespace.AddToSchemes.AddToScheme(s)
+	namespacev1.AddToSchemes.AddToScheme(s)
 
 	options := client.Options{
 		Scheme: s,
@@ -51,11 +82,11 @@ func NewClientManager(dev bool) (*ClientManager, error) {
 
 	k8sCli, err := kubernetes.NewForConfig(cfg)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	return &ClientManager{
-		K8sClient: k8sCli,
+	return &ClusterClients{
 		CRDClient: CRDClient,
-	}, nil
+		K8sClient: k8sCli,
+	}
 }

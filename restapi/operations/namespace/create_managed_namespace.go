@@ -29,7 +29,7 @@ func NewCreateManagedNamespace(ctx *middleware.Context, handler CreateManagedNam
 	return &CreateManagedNamespace{Context: ctx, Handler: handler}
 }
 
-/*CreateManagedNamespace swagger:route PUT /namespace/{customer} namespace createManagedNamespace
+/*CreateManagedNamespace swagger:route PUT /{clustername}/namespace/{customer} namespace createManagedNamespace
 
 CreateManagedNamespace create managed namespace API
 

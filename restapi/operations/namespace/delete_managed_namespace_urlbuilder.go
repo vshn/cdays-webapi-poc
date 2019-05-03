@@ -14,8 +14,9 @@ import (
 
 // DeleteManagedNamespaceURL generates an URL for the delete managed namespace operation
 type DeleteManagedNamespaceURL struct {
-	Customer string
-	Name     string
+	Clustername string
+	Customer    string
+	Name        string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -41,7 +42,14 @@ func (o *DeleteManagedNamespaceURL) SetBasePath(bp string) {
 func (o *DeleteManagedNamespaceURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/namespace/{customer}/{name}"
+	var _path = "/{clustername}/namespace/{customer}/{name}"
+
+	clustername := o.Clustername
+	if clustername != "" {
+		_path = strings.Replace(_path, "{clustername}", clustername, -1)
+	} else {
+		return nil, errors.New("clustername is required on DeleteManagedNamespaceURL")
+	}
 
 	customer := o.Customer
 	if customer != "" {

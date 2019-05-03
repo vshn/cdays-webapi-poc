@@ -9,11 +9,16 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 )
 
 // GetManagedNamespacesURL generates an URL for the get managed namespaces operation
 type GetManagedNamespacesURL struct {
+	Clustername string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -35,7 +40,14 @@ func (o *GetManagedNamespacesURL) SetBasePath(bp string) {
 func (o *GetManagedNamespacesURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/namespaces"
+	var _path = "/{clustername}/namespaces"
+
+	clustername := o.Clustername
+	if clustername != "" {
+		_path = strings.Replace(_path, "{clustername}", clustername, -1)
+	} else {
+		return nil, errors.New("clustername is required on GetManagedNamespacesURL")
+	}
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)

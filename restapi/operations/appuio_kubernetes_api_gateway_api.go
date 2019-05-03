@@ -19,6 +19,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/vshn/cdays-webapi-poc/restapi/operations/cluster"
 	"github.com/vshn/cdays-webapi-poc/restapi/operations/namespace"
 )
 
@@ -45,11 +46,17 @@ func NewAppuioKubernetesAPIGatewayAPI(spec *loads.Document) *AppuioKubernetesAPI
 		NamespaceDeleteManagedNamespaceHandler: namespace.DeleteManagedNamespaceHandlerFunc(func(params namespace.DeleteManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceDeleteManagedNamespace has not yet been implemented")
 		}),
+		ClusterGetAllClustersHandler: cluster.GetAllClustersHandlerFunc(func(params cluster.GetAllClustersParams) middleware.Responder {
+			return middleware.NotImplemented("operation ClusterGetAllClusters has not yet been implemented")
+		}),
 		NamespaceGetManagedNamespaceHandler: namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespace has not yet been implemented")
 		}),
 		NamespaceGetManagedNamespacesHandler: namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceGetManagedNamespaces has not yet been implemented")
+		}),
+		ClusterRegisterClusterHandler: cluster.RegisterClusterHandlerFunc(func(params cluster.RegisterClusterParams) middleware.Responder {
+			return middleware.NotImplemented("operation ClusterRegisterCluster has not yet been implemented")
 		}),
 		NamespaceUpdateManagedNamespaceHandler: namespace.UpdateManagedNamespaceHandlerFunc(func(params namespace.UpdateManagedNamespaceParams) middleware.Responder {
 			return middleware.NotImplemented("operation NamespaceUpdateManagedNamespace has not yet been implemented")
@@ -89,10 +96,14 @@ type AppuioKubernetesAPIGatewayAPI struct {
 	NamespaceCreateManagedNamespaceHandler namespace.CreateManagedNamespaceHandler
 	// NamespaceDeleteManagedNamespaceHandler sets the operation handler for the delete managed namespace operation
 	NamespaceDeleteManagedNamespaceHandler namespace.DeleteManagedNamespaceHandler
+	// ClusterGetAllClustersHandler sets the operation handler for the get all clusters operation
+	ClusterGetAllClustersHandler cluster.GetAllClustersHandler
 	// NamespaceGetManagedNamespaceHandler sets the operation handler for the get managed namespace operation
 	NamespaceGetManagedNamespaceHandler namespace.GetManagedNamespaceHandler
 	// NamespaceGetManagedNamespacesHandler sets the operation handler for the get managed namespaces operation
 	NamespaceGetManagedNamespacesHandler namespace.GetManagedNamespacesHandler
+	// ClusterRegisterClusterHandler sets the operation handler for the register cluster operation
+	ClusterRegisterClusterHandler cluster.RegisterClusterHandler
 	// NamespaceUpdateManagedNamespaceHandler sets the operation handler for the update managed namespace operation
 	NamespaceUpdateManagedNamespaceHandler namespace.UpdateManagedNamespaceHandler
 
@@ -166,12 +177,20 @@ func (o *AppuioKubernetesAPIGatewayAPI) Validate() error {
 		unregistered = append(unregistered, "namespace.DeleteManagedNamespaceHandler")
 	}
 
+	if o.ClusterGetAllClustersHandler == nil {
+		unregistered = append(unregistered, "cluster.GetAllClustersHandler")
+	}
+
 	if o.NamespaceGetManagedNamespaceHandler == nil {
 		unregistered = append(unregistered, "namespace.GetManagedNamespaceHandler")
 	}
 
 	if o.NamespaceGetManagedNamespacesHandler == nil {
 		unregistered = append(unregistered, "namespace.GetManagedNamespacesHandler")
+	}
+
+	if o.ClusterRegisterClusterHandler == nil {
+		unregistered = append(unregistered, "cluster.RegisterClusterHandler")
 	}
 
 	if o.NamespaceUpdateManagedNamespaceHandler == nil {
@@ -279,27 +298,37 @@ func (o *AppuioKubernetesAPIGatewayAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/namespace/{customer}"] = namespace.NewCreateManagedNamespace(o.context, o.NamespaceCreateManagedNamespaceHandler)
+	o.handlers["PUT"]["/{clustername}/namespace/{customer}"] = namespace.NewCreateManagedNamespace(o.context, o.NamespaceCreateManagedNamespaceHandler)
 
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/namespace/{customer}/{name}"] = namespace.NewDeleteManagedNamespace(o.context, o.NamespaceDeleteManagedNamespaceHandler)
+	o.handlers["DELETE"]["/{clustername}/namespace/{customer}/{name}"] = namespace.NewDeleteManagedNamespace(o.context, o.NamespaceDeleteManagedNamespaceHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/namespace/{customer}/{name}"] = namespace.NewGetManagedNamespace(o.context, o.NamespaceGetManagedNamespaceHandler)
+	o.handlers["GET"]["/clusters"] = cluster.NewGetAllClusters(o.context, o.ClusterGetAllClustersHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/namespaces"] = namespace.NewGetManagedNamespaces(o.context, o.NamespaceGetManagedNamespacesHandler)
+	o.handlers["GET"]["/{clustername}/namespace/{customer}/{name}"] = namespace.NewGetManagedNamespace(o.context, o.NamespaceGetManagedNamespaceHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/{clustername}/namespaces"] = namespace.NewGetManagedNamespaces(o.context, o.NamespaceGetManagedNamespacesHandler)
+
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/cluster"] = cluster.NewRegisterCluster(o.context, o.ClusterRegisterClusterHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/namespace/{customer}/{name}"] = namespace.NewUpdateManagedNamespace(o.context, o.NamespaceUpdateManagedNamespaceHandler)
+	o.handlers["POST"]["/{clustername}/namespace/{customer}/{name}"] = namespace.NewUpdateManagedNamespace(o.context, o.NamespaceUpdateManagedNamespaceHandler)
 
 }
 
