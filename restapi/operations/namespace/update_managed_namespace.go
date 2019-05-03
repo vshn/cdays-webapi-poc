@@ -29,7 +29,7 @@ func NewUpdateManagedNamespace(ctx *middleware.Context, handler UpdateManagedNam
 	return &UpdateManagedNamespace{Context: ctx, Handler: handler}
 }
 
-/*UpdateManagedNamespace swagger:route POST /namespace/{customer}/{name} namespace updateManagedNamespace
+/*UpdateManagedNamespace swagger:route POST /{clustername}/namespace/{customer}/{name} namespace updateManagedNamespace
 
 UpdateManagedNamespace update managed namespace API
 

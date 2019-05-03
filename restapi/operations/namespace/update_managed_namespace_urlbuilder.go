@@ -14,8 +14,9 @@ import (
 
 // UpdateManagedNamespaceURL generates an URL for the update managed namespace operation
 type UpdateManagedNamespaceURL struct {
-	Customer string
-	Name     string
+	Clustername string
+	Customer    string
+	Name        string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -41,7 +42,14 @@ func (o *UpdateManagedNamespaceURL) SetBasePath(bp string) {
 func (o *UpdateManagedNamespaceURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/namespace/{customer}/{name}"
+	var _path = "/{clustername}/namespace/{customer}/{name}"
+
+	clustername := o.Clustername
+	if clustername != "" {
+		_path = strings.Replace(_path, "{clustername}", clustername, -1)
+	} else {
+		return nil, errors.New("clustername is required on UpdateManagedNamespaceURL")
+	}
 
 	customer := o.Customer
 	if customer != "" {

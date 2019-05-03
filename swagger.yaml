@@ -4,10 +4,15 @@ info:
   version: 0.0.1
   title: Appuio Kubernetes API gateway
 paths:
-  /namespaces:
+  /{clustername}/namespaces:
     get:
       tags:
         - namespace
+      parameters:
+        - name: clustername
+          type: string
+          required: true
+          in: path
       produces:
         - application/json
       operationId: getManagedNamespaces
@@ -19,7 +24,7 @@ paths:
             description: list of namespaces
             items:
               $ref: '#/definitions/namespace'
-  /namespace/{customer}/{name}:
+  /{clustername}/namespace/{customer}/{name}:
     post:
       tags:
         - namespace
@@ -38,6 +43,10 @@ paths:
         in: body
         schema:
           $ref: '#/definitions/namespace'
+      - name: clustername
+        type: string
+        required: true
+        in: path
       produces:
         - application/json
       consumes:
@@ -62,6 +71,10 @@ paths:
         name: customer
         in: path
         required: true
+      - name: clustername
+        type: string
+        required: true
+        in: path
       produces:
         - application/json
       operationId: deleteManagedNamespace
@@ -84,6 +97,10 @@ paths:
         name: customer
         in: path
         required: true
+      - name: clustername
+        type: string
+        required: true
+        in: path
       produces:
         - application/json
       operationId: getManagedNamespace
@@ -92,11 +109,15 @@ paths:
           description: returns a single namespace
           schema:
             $ref: '#/definitions/namespace'
-  /namespace/{customer}:
+  /{clustername}/namespace/{customer}:
     put:
       tags:
         - namespace
       parameters:
+      - name: clustername
+        type: string
+        required: true
+        in: path
       - type: string
         format: string
         name: customer
@@ -116,6 +137,39 @@ paths:
           description: create a new managed namespace
           schema:
             $ref: '#/definitions/namespace'
+  /clusters:
+    get:
+      tags:
+        - cluster
+      produces:
+        - application/json
+      operationId: getAllClusters
+      responses:
+        200:
+          description: returns all clusters
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/cluster'
+  /cluster:
+    put:
+      tags:
+        - cluster
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+      - name: body
+        in: body
+        schema:
+          $ref: "#/definitions/cluster"
+      operationId: registerCluster
+      responses:
+        200:
+          description: registers a new cluster
+          schema:
+            $ref: '#/definitions/cluster'
 
 
 definitions:
@@ -134,3 +188,20 @@ definitions:
       customer:
         type: string
         minLength: 1
+  cluster:
+    type: object
+    required:
+      - name
+      - url
+    properties:
+      name:
+        type: string
+        minLength: 1
+      url:
+        type: string
+        minLength: 1
+      token:
+        type: string
+        minLength: 1
+      version:
+        type: string

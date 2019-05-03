@@ -34,6 +34,11 @@ type GetManagedNamespaceParams struct {
 	  Required: true
 	  In: path
 	*/
+	Clustername string
+	/*
+	  Required: true
+	  In: path
+	*/
 	Customer string
 	/*
 	  Required: true
@@ -51,6 +56,11 @@ func (o *GetManagedNamespaceParams) BindRequest(r *http.Request, route *middlewa
 
 	o.HTTPRequest = r
 
+	rClustername, rhkClustername, _ := route.Params.GetOK("clustername")
+	if err := o.bindClustername(rClustername, rhkClustername, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	rCustomer, rhkCustomer, _ := route.Params.GetOK("customer")
 	if err := o.bindCustomer(rCustomer, rhkCustomer, route.Formats); err != nil {
 		res = append(res, err)
@@ -64,6 +74,21 @@ func (o *GetManagedNamespaceParams) BindRequest(r *http.Request, route *middlewa
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindClustername binds and validates parameter Clustername from path.
+func (o *GetManagedNamespaceParams) bindClustername(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+	// Parameter is provided by construction from the route
+
+	o.Clustername = raw
+
 	return nil
 }
 

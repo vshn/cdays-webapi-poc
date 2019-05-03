@@ -24,7 +24,60 @@ func init() {
     "version": "0.0.1"
   },
   "paths": {
-    "/namespace/{customer}": {
+    "/cluster": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "cluster"
+        ],
+        "operationId": "registerCluster",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/cluster"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "registers a new cluster",
+            "schema": {
+              "$ref": "#/definitions/cluster"
+            }
+          }
+        }
+      }
+    },
+    "/clusters": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "cluster"
+        ],
+        "operationId": "getAllClusters",
+        "responses": {
+          "200": {
+            "description": "returns all clusters",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/cluster"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{clustername}/namespace/{customer}": {
       "put": {
         "consumes": [
           "application/json"
@@ -37,6 +90,12 @@ func init() {
         ],
         "operationId": "createManagedNamespace",
         "parameters": [
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
+          },
           {
             "type": "string",
             "format": "string",
@@ -62,7 +121,7 @@ func init() {
         }
       }
     },
-    "/namespace/{customer}/{name}": {
+    "/{clustername}/namespace/{customer}/{name}": {
       "get": {
         "produces": [
           "application/json"
@@ -83,6 +142,12 @@ func init() {
             "type": "string",
             "format": "string",
             "name": "customer",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "clustername",
             "in": "path",
             "required": true
           }
@@ -128,6 +193,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/namespace"
             }
+          },
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
@@ -161,20 +232,25 @@ func init() {
             "name": "customer",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
           "200": {
             "description": "deletes a single namespace",
             "schema": {
-              "type": "object",
               "$ref": "#/definitions/namespace"
             }
           }
         }
       }
     },
-    "/namespaces": {
+    "/{clustername}/namespaces": {
       "get": {
         "produces": [
           "application/json"
@@ -183,6 +259,14 @@ func init() {
           "namespace"
         ],
         "operationId": "getManagedNamespaces",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "returns a list of namespaces",
@@ -199,6 +283,30 @@ func init() {
     }
   },
   "definitions": {
+    "cluster": {
+      "type": "object",
+      "required": [
+        "name",
+        "url"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "token": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
     "namespace": {
       "type": "object",
       "required": [
@@ -229,7 +337,60 @@ func init() {
     "version": "0.0.1"
   },
   "paths": {
-    "/namespace/{customer}": {
+    "/cluster": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "cluster"
+        ],
+        "operationId": "registerCluster",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/cluster"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "registers a new cluster",
+            "schema": {
+              "$ref": "#/definitions/cluster"
+            }
+          }
+        }
+      }
+    },
+    "/clusters": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "cluster"
+        ],
+        "operationId": "getAllClusters",
+        "responses": {
+          "200": {
+            "description": "returns all clusters",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/cluster"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{clustername}/namespace/{customer}": {
       "put": {
         "consumes": [
           "application/json"
@@ -242,6 +403,12 @@ func init() {
         ],
         "operationId": "createManagedNamespace",
         "parameters": [
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
+          },
           {
             "type": "string",
             "format": "string",
@@ -267,7 +434,7 @@ func init() {
         }
       }
     },
-    "/namespace/{customer}/{name}": {
+    "/{clustername}/namespace/{customer}/{name}": {
       "get": {
         "produces": [
           "application/json"
@@ -288,6 +455,12 @@ func init() {
             "type": "string",
             "format": "string",
             "name": "customer",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "clustername",
             "in": "path",
             "required": true
           }
@@ -333,6 +506,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/namespace"
             }
+          },
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
@@ -366,20 +545,25 @@ func init() {
             "name": "customer",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
           "200": {
             "description": "deletes a single namespace",
             "schema": {
-              "type": "object",
               "$ref": "#/definitions/namespace"
             }
           }
         }
       }
     },
-    "/namespaces": {
+    "/{clustername}/namespaces": {
       "get": {
         "produces": [
           "application/json"
@@ -388,6 +572,14 @@ func init() {
           "namespace"
         ],
         "operationId": "getManagedNamespaces",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "clustername",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "returns a list of namespaces",
@@ -404,6 +596,30 @@ func init() {
     }
   },
   "definitions": {
+    "cluster": {
+      "type": "object",
+      "required": [
+        "name",
+        "url"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "token": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
     "namespace": {
       "type": "object",
       "required": [

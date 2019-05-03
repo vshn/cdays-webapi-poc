@@ -29,7 +29,7 @@ func NewGetManagedNamespace(ctx *middleware.Context, handler GetManagedNamespace
 	return &GetManagedNamespace{Context: ctx, Handler: handler}
 }
 
-/*GetManagedNamespace swagger:route GET /namespace/{customer}/{name} namespace getManagedNamespace
+/*GetManagedNamespace swagger:route GET /{clustername}/namespace/{customer}/{name} namespace getManagedNamespace
 
 GetManagedNamespace get managed namespace API
 

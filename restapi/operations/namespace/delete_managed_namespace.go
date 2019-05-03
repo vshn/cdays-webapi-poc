@@ -29,7 +29,7 @@ func NewDeleteManagedNamespace(ctx *middleware.Context, handler DeleteManagedNam
 	return &DeleteManagedNamespace{Context: ctx, Handler: handler}
 }
 
-/*DeleteManagedNamespace swagger:route DELETE /namespace/{customer}/{name} namespace deleteManagedNamespace
+/*DeleteManagedNamespace swagger:route DELETE /{clustername}/namespace/{customer}/{name} namespace deleteManagedNamespace
 
 DeleteManagedNamespace delete managed namespace API
 

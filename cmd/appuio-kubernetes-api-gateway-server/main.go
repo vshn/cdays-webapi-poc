@@ -17,6 +17,7 @@ import (
 	"github.com/vshn/cdays-webapi-poc/kube"
 	"github.com/vshn/cdays-webapi-poc/restapi"
 	"github.com/vshn/cdays-webapi-poc/restapi/operations"
+	"github.com/vshn/cdays-webapi-poc/restapi/operations/cluster"
 	"github.com/vshn/cdays-webapi-poc/restapi/operations/namespace"
 )
 
@@ -37,15 +38,15 @@ func main() {
 	}
 
 	api.NamespaceGetManagedNamespacesHandler = namespace.GetManagedNamespacesHandlerFunc(func(params namespace.GetManagedNamespacesParams) middleware.Responder {
-		return namespace.NewGetManagedNamespacesOK().WithPayload(kubeClient.AllManagedNamespaces())
+		return namespace.NewGetManagedNamespacesOK().WithPayload(kubeClient.AllManagedNamespaces(params.Clustername))
 	})
 
 	api.NamespaceGetManagedNamespaceHandler = namespace.GetManagedNamespaceHandlerFunc(func(params namespace.GetManagedNamespaceParams) middleware.Responder {
-		return namespace.NewGetManagedNamespaceOK().WithPayload(kubeClient.GetManagedNamespaceByName(params.Name, params.Customer))
+		return namespace.NewGetManagedNamespaceOK().WithPayload(kubeClient.GetManagedNamespaceByName(params.Clustername, params.Name, params.Customer))
 	})
 
 	api.NamespaceCreateManagedNamespaceHandler = namespace.CreateManagedNamespaceHandlerFunc(func(params namespace.CreateManagedNamespaceParams) middleware.Responder {
-		newNamespace, err := kubeClient.CreateManagedNamespace(params.Customer, params.Body)
+		newNamespace, err := kubeClient.CreateManagedNamespace(params.Clustername, params.Customer, params.Body)
 
 		if err != nil {
 			fmt.Printf("error while creating a new namespace: %v\n", err)
@@ -56,7 +57,7 @@ func main() {
 	})
 
 	api.NamespaceDeleteManagedNamespaceHandler = namespace.DeleteManagedNamespaceHandlerFunc(func(params namespace.DeleteManagedNamespaceParams) middleware.Responder {
-		deleted, err := kubeClient.DeleteManagedNamespace(params.Customer, params.Name)
+		deleted, err := kubeClient.DeleteManagedNamespace(params.Clustername, params.Customer, params.Name)
 		if err != nil {
 			fmt.Printf("can't delete managed namespace: %v", err)
 		}
@@ -65,13 +66,21 @@ func main() {
 	})
 
 	api.NamespaceUpdateManagedNamespaceHandler = namespace.UpdateManagedNamespaceHandlerFunc(func(params namespace.UpdateManagedNamespaceParams) middleware.Responder {
-		updated, err := kubeClient.UpdateManagedNamespace(params.Customer, params.Name, params.Body)
+		updated, err := kubeClient.UpdateManagedNamespace(params.Clustername, params.Customer, params.Name, params.Body)
 
 		if err != nil {
 			fmt.Printf("error updating managed namespace: %v", err)
 		}
 
 		return namespace.NewUpdateManagedNamespaceOK().WithPayload(updated)
+	})
+
+	api.ClusterGetAllClustersHandler = cluster.GetAllClustersHandlerFunc(func(params cluster.GetAllClustersParams) middleware.Responder {
+		return cluster.NewGetAllClustersOK().WithPayload(kubeClient.ListAllClusters())
+	})
+
+	api.ClusterRegisterClusterHandler = cluster.RegisterClusterHandlerFunc(func(params cluster.RegisterClusterParams) middleware.Responder {
+		return cluster.NewRegisterClusterOK().WithPayload(kubeClient.AddCluster(params.Body))
 	})
 
 	parser := flags.NewParser(server, flags.Default)

@@ -17,12 +17,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func (k *ClientManager) AllManagedNamespaces() []*models.Namespace {
+func (k *ClientManager) AllManagedNamespaces(cluster string) []*models.Namespace {
 	namespaces := make([]*models.Namespace, 0)
 
 	managedNamespaces := &controlv1.ManagedNamespaceList{}
 
-	err := k.CRDClient.List(context.Background(), &client.ListOptions{}, managedNamespaces)
+	err := k.clusters[cluster].CRDClient.List(context.Background(), &client.ListOptions{}, managedNamespaces)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -39,7 +39,7 @@ func (k *ClientManager) AllManagedNamespaces() []*models.Namespace {
 	return namespaces
 }
 
-func (k *ClientManager) GetManagedNamespaceByName(name, customer string) *models.Namespace {
+func (k *ClientManager) GetManagedNamespaceByName(cluster, name, customer string) *models.Namespace {
 
 	key := client.ObjectKey{
 		Namespace: customer,
@@ -48,7 +48,7 @@ func (k *ClientManager) GetManagedNamespaceByName(name, customer string) *models
 
 	managedNamespaces := &controlv1.ManagedNamespace{}
 
-	k.CRDClient.Get(context.Background(), key, managedNamespaces)
+	k.clusters[cluster].CRDClient.Get(context.Background(), key, managedNamespaces)
 
 	return &models.Namespace{
 		Name:        swag.String(managedNamespaces.GetName()),
@@ -57,7 +57,7 @@ func (k *ClientManager) GetManagedNamespaceByName(name, customer string) *models
 	}
 }
 
-func (k *ClientManager) CreateManagedNamespace(customer string, newNamespace *models.Namespace) (*models.Namespace, error) {
+func (k *ClientManager) CreateManagedNamespace(cluster, customer string, newNamespace *models.Namespace) (*models.Namespace, error) {
 	toCreate := &controlv1.ManagedNamespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      swag.StringValue(newNamespace.Name),
@@ -68,7 +68,7 @@ func (k *ClientManager) CreateManagedNamespace(customer string, newNamespace *mo
 		},
 	}
 
-	err := k.CRDClient.Create(context.Background(), toCreate)
+	err := k.clusters[cluster].CRDClient.Create(context.Background(), toCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (k *ClientManager) CreateManagedNamespace(customer string, newNamespace *mo
 	return newNamespace, nil
 }
 
-func (k *ClientManager) DeleteManagedNamespace(customer, name string) (*models.Namespace, error) {
+func (k *ClientManager) DeleteManagedNamespace(cluster, customer, name string) (*models.Namespace, error) {
 	managed := controlv1.ManagedNamespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -84,12 +84,12 @@ func (k *ClientManager) DeleteManagedNamespace(customer, name string) (*models.N
 		},
 	}
 
-	err := k.CRDClient.Delete(context.Background(), &managed, client.PropagationPolicy(metav1.DeletePropagationBackground))
+	err := k.clusters[cluster].CRDClient.Delete(context.Background(), &managed, client.PropagationPolicy(metav1.DeletePropagationBackground))
 
 	return &models.Namespace{Name: swag.String(name), Customer: swag.String(customer)}, err
 }
 
-func (k *ClientManager) UpdateManagedNamespace(customer, name string, managedNamespace *models.Namespace) (*models.Namespace, error) {
+func (k *ClientManager) UpdateManagedNamespace(cluster, customer, name string, managedNamespace *models.Namespace) (*models.Namespace, error) {
 	key := client.ObjectKey{
 		Namespace: customer,
 		Name:      name,
@@ -97,7 +97,7 @@ func (k *ClientManager) UpdateManagedNamespace(customer, name string, managedNam
 
 	get := &controlv1.ManagedNamespace{}
 
-	err := k.CRDClient.Get(context.Background(), key, get)
+	err := k.clusters[cluster].CRDClient.Get(context.Background(), key, get)
 
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (k *ClientManager) UpdateManagedNamespace(customer, name string, managedNam
 
 	get.Spec.Description = managedNamespace.Description
 
-	err = k.CRDClient.Update(context.Background(), get)
+	err = k.clusters[cluster].CRDClient.Update(context.Background(), get)
 
 	return managedNamespace, err
 }
